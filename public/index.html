@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Restaurant Review Website</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+    <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"/>
+
+
+    <link rel="stylesheet" href="css/mystyle.css">
+
+</head>
+
+<body onload="getRestaurantData()">
+<!-- Include top navigation here -->
+<div w3-include-html="top-navigation.html"></div>
+<!-- This is the container that holds the initial message, heading, and movies -->
+<div class="container">
+    <h3 style="margin-top: 25px;">
+        <center>Reviews</center>
+    </h3>
+
+
+    <div class="row">
+        <div class="col-md-10">
+            <input type="text" class="form-control" id="restaurent_name" placeholder="Search with restaurant name .... "
+                   onkeyup="getFilterData()"/><i
+                class="fa fa-filter" style="float: right;
+        margin-right: 6px;
+        margin-top: -27px;
+        position: relative;
+        z-index: 2;
+        color: red;"></i></div>
+
+        <div class="col-md-12" style="margin-top: 10px;">
+
+            <select id="cuisine" style="height: 35px; width: 230px;" onchange="getFilterData()">
+                <option value="">By Cuisine</option>
+                <option value="Western">Western</option>
+                <option value="Malay">Malay</option>
+                <option value="Indian">Indian</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Korean/Japanese">Korean/Japanese</option>
+                <option value="Fast Food">Fast Food</option>
+            </select>
+            <select id="location" style="height: 35px; width: 230px;" onchange="getFilterData()">
+                <option value="">By Location</option>
+                <option value="north">North</option>
+                <option value="south">South</option>
+                <option value="east">East</option>
+                <option value="west">West</option>
+            </select>
+            <select id="rating" style="height: 35px; width: 230px;" onchange="getFilterData()">
+                <option value="">By Rating</option>
+                <option value="5">* * * * *</option>
+                <option value="4">* * * *</option>
+                <option value="3">* * *</option>
+                <option value="2">* *</option>
+                <option value="1">*</option>
+            </select>
+
+            <select id="price" style="height: 35px; width: 230px;" onchange="getFilterData()">
+                <option value="">By Price</option>
+                <option value="5"> < $5</option>
+                <option value="10"> $5 > $10</option>
+                <option value="20"> $10 > $20</option>
+                <option value="40"> $20 > $40</option>
+                <option value="41"> > $40</option>
+            </select>
+
+        </div>
+    </div>
+    <div class="row" id="parent">
+        Retrieving restaurant from database... Please wait...<br><br>
+        If you are seeing this message for a long time, it is likely
+        that you have a JavaScript error. Troubleshoot your script by
+        using the browser console panel now. Please use either Firefox
+        or Chrome to render this webpage.
+    </div>
+    <p>
+        <!-- This is the heading showing how many movies are there -->
+    <h3 id="summary"></h3>
+    </p>
+    <!-- Displays thumbnails of the movies here -->
+    <div id="restaurantTable" class="row"></div>
+
+    <form id="commentForm">
+        <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" data-backdrop="static"
+             data-keyboard="false">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="col-md-12" style="margin-left: 15px; padding-right: 40px;">
+                        <div class="col-md-12">
+                            <img class="center col-md-3" src="images/restaurant/macs2.png"/>
+                            <img class="center col-md-3" style="margin-left: 30px;" src="images/restaurant/macs3.png"/>
+                            <img class="center col-md-3" style="margin-left: 30px;" src="images/restaurant/macs4.png"/>
+                        </div>
+                        <div class="col-md-12">
+                            <span id="star_rating"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <p id="restaurant_details"></p>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div><img id="restaurant_image" src="" width="100%"/></div>
+                        </div>
+                        <div class="col-md-12" style="border-bottom: 2px dashed #00A000; margin-top: 10px;"></div>
+                        <div class="col-md-12" style="margin-bottom: 30px;">
+                            <h4>Location Includes:</h4>
+                            <p id="locations"></p>
+                            <p id="locations2"></p>
+                            <p id="opening_hours"></p>
+                            <p id="contact_number"></p>
+                        </div>
+                        <div class="col-md-12" style="border-bottom: 2px dashed #00A000; margin-top: 10px;"></div>
+                        <h4>Review Details:</h4>
+                        <div class="col-md-12">
+                            <table>
+                                <tbody  id="div_comment">
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                        <div class="col-md-12" style="border-bottom: 2px dashed #00A000; margin-top: 10px;"></div>
+
+                        <div class="col-md-12" style="margin-top: 30px;">
+                            <h4>Review :</h4>
+                            <div class="rating"></div>
+                            <textarea style="height: 120px; width: 100%" name="comments" id="comments"></textarea>
+                        </div>
+                        <input type="hidden" id="ratings" name="ratings" value=""/>
+                        <input type="hidden" id="restaurant_id" name="restaurant_id" value=""/>
+                        <input type="hidden" id="user_id" name="user_id" value="1"/>
+
+                        <div class="col-md-12" style="margin-top: 30px;">
+                            <button type="button" class="btn btn-secondary bg-dark" data-dismiss="modal"
+                                    onclick="javascript:window.location.reload()"
+                                    style="float: right">Close
+                            </button>
+                            <button type="button" class="btn btn-secondary bg-danger" style="float: left;"
+                                    onclick="addComment()">Submit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row px-5" id="commentBody"></div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form id="commentFormEdit">
+        <div class="modal fade" id="commentModalEdit" tabindex="-1" role="dialog" data-backdrop="static"
+             data-keyboard="false">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="col-md-12" style="margin-left: 15px; padding-right: 40px;">
+                        <input type="hidden" id="comment_id" name="comment_id" value="" />
+                        <h4>Edit Comment</h4>
+                        <div class="col-md-12" style="border-bottom: 2px dashed #00A000; margin-top: 10px;"></div>
+
+                        <div class="col-md-12" style="margin-top: 30px;">
+                            <h4>Review :</h4>
+                            <div class="rating"></div>
+                            <textarea style="height: 120px; width: 100%" name="comments" id="commentsEdit"></textarea>
+                        </div>
+
+                        <input type="hidden" id="restaurant_idEdit" name="restaurant_id" value=""/>
+                        <input type="hidden" id="user_idEdit" name="user_id" value="1"/>
+
+                        <div class="col-md-12" style="margin-top: 30px;">
+                            <button type="button" class="btn btn-secondary bg-dark" data-dismiss="modal"
+                                    onclick="javascript:window.location.reload()"
+                                    style="float: right">Close
+                            </button>
+                            <button type="button" class="btn btn-secondary bg-danger" style="float: left;"
+                                    onclick="updateComment()">Submit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row px-5" id="commentBodyEdit"></div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div w3-include-html="new-comments-modal.html"></div>
+
+<div w3-include-html="edit-comments-modal.html"></div>
+
+<div w3-include-html="message-modal.html"></div>
+
+<!--<div w3-include-html="login.html"></div>-->
+
+<br><br>
+</body>
+
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+<script>
+    //to bring in other HTML on the fly into this page
+    w3.includeHTML();
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/86ec7c1143.js"></script>
+<script src="js/app.js"></script>
+<script src="js/comments.js"></script>
+<script src="js/restaurant.js"></script>
+
+<!--<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>-->
+<script src="js/jquery.star-rating.js"></script>
+<script>
+
+    $('.rating').starRating(
+        {
+            starSize: 1.5,
+            showInfo: true
+        });
+
+    $(document).on('change', '.rating',
+        function (e, stars, index) {
+            $("#ratings").val(stars);
+            /*//var dd = $("#js-wc-rating-value").val();
+             console.log(stars);
+             //alert(`Thx for ${stars} stars!`);*/
+        });
+
+    function addReview() {
+
+        var restaurant = '/comments';
+        var request = new XMLHttpRequest();
+        request.open('GET', restaurant, true);
+        //This function will be called when data returns from the web api
+        request.onload = function () {
+            //get all the restaurants records into our review array
+            review_array = JSON.parse(request.responseText);
+            //Fetch the comments as well
+            fetchComments();
+            console.log(review_array) // output to console
+            //call the function so as to display all restaurants tiles for "Now Showing"
+            displayRestaurants(category);
+        };
+
+        //This command starts the calling of the restaurants web api
+        request.send();
+    }
+</script>
+
+
+</html>
